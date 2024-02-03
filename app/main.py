@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from database import SessionLocal
+
 app = FastAPI()
 
 
@@ -12,14 +13,6 @@ class Location(BaseModel):
 class NewFriend(BaseModel):
     name: str
     location: Location
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 
 @app.get("/")
