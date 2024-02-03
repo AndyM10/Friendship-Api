@@ -1,14 +1,27 @@
 services:
   database:
-    build: ./db/
+    image: postgres:latest
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - 5432:5432
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
    
   app:
     build: .
     container_name: friendship-api
-    command: uvicorn main:app --host 0.0.0.0 --port 80 --reload
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
     ports: 
-      - 80:80
+      - 8000:8000
     volumes:
       - .:/app
     depends_on:
       - database
+
+volumes:
+  db:
+    driver: local

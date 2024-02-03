@@ -1,11 +1,13 @@
 from fastapi import FastAPI, Depends
-from typing import Tuple, List, Annotated
+from typing import Annotated
 from pydantic import BaseModel
-from app.database import SessionLocal
+from app.database import SessionLocal, engine
 from sqlalchemy.orm import Session
-from sqlalchemy.sql import text
+import app.models as models
 
 app = FastAPI()
+
+models.Base.metadata.create_all(bind=engine)
 
 
 def get_db():
@@ -18,8 +20,8 @@ def get_db():
 
 class NewFriend(BaseModel):
     name: str
-    location: Tuple[float, float]
-    friends: List[int]
+    location: str
+    friends: str
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
@@ -28,18 +30,11 @@ db_dependency = Annotated[Session, Depends(get_db)]
 @app.get("/")
 def read_root(db: db_dependency):
 
-    results = db.execute(text('SELECT * FROM friends'))
-    print(results)
-    for row in results:
-        print(row)
-    return {"Hello": "Andrew"}
+    results = db.query(models.Friend).all()
+
+    return results
 
 
-@app.get("/friends/{id}")
-def read_friends():
-    return [{"name": "Andrew", "location": {"lat": 0.0, "long": 0.0}}]
-
-
-@app.post("/friends")
-def add_friend(friend: NewFriend):
+@app.post("/friend")
+def add_friend(friend: NewFriend, db: db_dependency):
     return friend
