@@ -1,4 +1,7 @@
 services:
+  database:
+    build: ./db/
+   
   app:
     build: .
     container_name: friendship-api
@@ -7,3 +10,5 @@ services:
       - 80:80
     volumes:
       - .:/app
+    depends_on:
+      - database
