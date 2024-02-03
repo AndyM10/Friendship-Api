@@ -1,22 +1,37 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from typing import Tuple, List, Annotated
 from pydantic import BaseModel
-from database import SessionLocal
+from app.database import SessionLocal
+from sqlalchemy.orm import Session
+from sqlalchemy.sql import text
 
 app = FastAPI()
 
 
-class Location(BaseModel):
-    lat: float
-    long: float
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 class NewFriend(BaseModel):
     name: str
-    location: Location
+    location: Tuple[float, float]
+    friends: List[int]
+
+
+db_dependency = Annotated[Session, Depends(get_db)]
 
 
 @app.get("/")
-def read_root():
+def read_root(db: db_dependency):
+
+    results = db.execute(text('SELECT * FROM friends'))
+    print(results)
+    for row in results:
+        print(row)
     return {"Hello": "Andrew"}
 
 
