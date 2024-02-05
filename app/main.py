@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from app.database import SessionLocal, engine
 from sqlalchemy.orm import Session
 import app.models as models
+from sqlalchemy import select, delete
 
 app = FastAPI()
 
@@ -37,4 +38,14 @@ def read_root(db: db_dependency):
 
 @app.post("/friend")
 def add_friend(friend: NewFriend, db: db_dependency):
+    db.add(friend)
+    db.commit()
     return friend
+
+@app.post('/FRIENDS/{friend_id}')
+def remove_friend(friend_id: int, db: db_dependency):
+    db_query = select(models.Friend).where(models.Friend.id == friend_id)
+    for x in db.scalars(db_query):
+        db.delete(x)
+    db.commit()
+
