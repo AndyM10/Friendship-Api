@@ -56,7 +56,9 @@ def update_friend(friend: NewFriend, friend_id: int, db: db_dependency):
     new_name = friend.name
     new_location = friend.location
     new_friends = friend.friends
-    update(models.Friend).where(models.Friend.id == friend_id).values(models.Friend.name == new_name, models.Friend.location == new_location, models.Friend.friends == new_friends)
-    
-
-    return
+    db_query = select(models.Friend).where(models.Friend.id == friend_id)
+    db_query.name = new_name
+    db_query.location = new_location
+    db_query.friends = new_friends
+           
+    return "Friend Info Updated"
