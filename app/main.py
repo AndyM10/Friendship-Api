@@ -6,6 +6,7 @@ from sqlalchemy.orm import Session
 import app.models as models
 from sqlalchemy import select, delete, update
 
+
 app = FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
