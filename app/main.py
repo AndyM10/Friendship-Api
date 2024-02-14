@@ -47,8 +47,6 @@ def add_friend(friend: NewFriend, db: db_dependency):
 @app.delete('/friend/{friend_id}')
 def remove_friend(friend_id: int, db: db_dependency):
     db_query = delete(models.Friend).where(models.Friend.id == friend_id)
-    #for x in db.scalars(db_query):
-    #    db.delete(x)
     db.execute(db_query)
     db.commit()
     return "Friend Removed"
