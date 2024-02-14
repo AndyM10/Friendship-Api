@@ -46,20 +46,17 @@ def add_friend(friend: NewFriend, db: db_dependency):
 
 @app.delete('/friend/{friend_id}')
 def remove_friend(friend_id: int, db: db_dependency):
-    db_query = select(models.Friend).where(models.Friend.id == friend_id)
-    for x in db.scalars(db_query):
-        db.delete(x)
+    db_query = delete(models.Friend).where(models.Friend.id == friend_id)
+    #for x in db.scalars(db_query):
+    #    db.delete(x)
+    db.execute(db_query)
     db.commit()
     return "Friend Removed"
 
 @app.put('/friend/{update}')
 def update_friend(friend: NewFriend, friend_id: int, db: db_dependency):
 
-    db_query = select(models.Friend).where(models.Friend.id == friend_id)
-    db_query.name = friend.name
-    db_query.location = friend.location
-    db_query.friends = friend.friends
-    
-    
+    db_query = update(models.Friend).values(name=friend.name, location=friend.location, friends=friend.friends).where(models.Friend.id == friend_id)
+    db.execute(db_query)
     db.commit()           
     return "Friend Info Updated"
