@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends
 from typing import Annotated
 from pydantic import BaseModel
+from typing import List
 from app.database import SessionLocal, engine
 from sqlalchemy.orm import Session
 import app.models as models
@@ -28,7 +29,7 @@ class NewFriend(BaseModel):
 class NewUser(BaseModel):
     email: str
     location: str
-    friends: int
+    friends: List[int]
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
@@ -86,7 +87,7 @@ def remove_friend(user_id: int, db: db_dependency):
 @app.put('/user/{update}')
 def update_friend(user: NewUser, user_id: int, db: db_dependency):
 
-    db_query = update(models.User).values(email=user.email, location=user.location).where(models.User.id == user_id)
+    db_query = update(models.User).values(email=user.email, location=user.location, friends=user.friends).where(models.User.id == user_id)
     db.execute(db_query)
     db.commit()           
     return "User Info Updated"
